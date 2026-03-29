@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "turbomlx"
+version = "0.1.0"
+description = "TurboMLX companion package for mlx-lm with paper-faithful key-path TurboQuant primitives."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "TurboMLX" }]
+dependencies = [
+  "numpy>=1.26",
+  "typer>=0.12",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+]
+mlx = [
+  "mlx>=0.31.1,<0.32",
+  "mlx-lm>=0.31.1,<0.32",
+]
+
+[project.scripts]
+turbomlx = "turbomlx.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/turbomlx"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.venv",
+  "/.venv312",
+  "/.pytest_cache",
+  "/**/__pycache__",
+  "/**/.DS_Store",
+  "/**/__MACOSX",
+  "/references/*.pdf",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

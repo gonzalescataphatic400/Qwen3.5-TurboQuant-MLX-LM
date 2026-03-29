@@ -1,0 +1,11 @@
+.venv/
+.venv312/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+.DS_Store
+__MACOSX/
+references/*.pdf
+dist/
+build/
+*.egg-info/
