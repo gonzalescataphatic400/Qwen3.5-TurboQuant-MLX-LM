@@ -1,8 +1,8 @@
-# TurboMLX
+# Qwen3.5-TurboQuant-MLX-LM
 
-TurboMLX is a companion package for `mlx-lm`.
+`TurboMLX v0.1 Research Preview`
 
-Public GitHub release packaging for this preview uses the repository name `Qwen3.5-TurboQuant-MLX-LM`, while the Python package and CLI remain `turbomlx`.
+This repository packages the TurboMLX preview work for GitHub under the name `Qwen3.5-TurboQuant-MLX-LM`. The Python package and CLI remain `turbomlx`.
 
 TurboMLX `v0.1 Research Preview` currently targets Qwen3 / Qwen3.5 full-attention `KVCache` layers only.
 
@@ -23,6 +23,41 @@ Important limitations:
 - preview runtime scoring defaults to `oracle_preview`; a narrow `native_mlx` scorer preview now exists only for Qwen3 / Qwen3.5 full-attention `KVCache` with `mode=mse`, `bits_total=4`, and `values_mode=dense`
 - `native_mlx` is a Stage A remediation path, not the final packed-index direct score-space scorer
 - the supported public runtime entrypoints are `generate_with_backend`, `convert_prompt_cache`, `save_prompt_cache`, and `load_prompt_cache`
+
+## Release Status
+
+- release label: `v0.1 Research Preview`
+- package identity: `turbomlx`
+- CLI: `turbomlx`
+- supported public preview target: Qwen3 / Qwen3.5 full-attention `KVCache` only
+- non-goal for this release: throughput parity with `mlx_quant`
+
+## Latest Verification Snapshot
+
+Tested on `2026-03-29` with:
+
+- `mlx==0.31.1`
+- `mlx-lm==0.31.1`
+- smoke model: `mlx-community/Qwen3.5-9B-MLX-4bit`
+
+Verification results:
+
+- `python3 -m compileall src` passed
+- `PYTHONPATH=src .venv/bin/python -m pytest -q` -> `72 passed, 1 skipped`
+- Qwen native smoke generate passed with `scorer_route = native_mlx`
+
+Illustrative benchmark snapshot on the tested Apple Silicon stack:
+
+| Route | Prompt TPS | Decode TPS | Key Path Bytes | Native Working Set Bytes |
+| --- | ---: | ---: | ---: | ---: |
+| `native_mlx` median (`512/64`, warmup `1`, repeats `3`) | `381.41` | `40.10` | `28776896` | `18841600` |
+| `oracle_preview` median (`512/64`, warmup `1`, repeats `3`) | `285.61` | `41.58` | `47618496` | `0` |
+
+Interpretation:
+
+- this snapshot is environment-specific and not a throughput guarantee
+- in this run, `native_mlx` improved prompt throughput and reduced key-path bytes materially
+- in this same run, `oracle_preview` was still slightly faster on median decode TPS
 
 ## Bit Semantics
 

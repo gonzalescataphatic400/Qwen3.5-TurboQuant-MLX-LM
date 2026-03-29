@@ -33,6 +33,31 @@ TurboMLX `v0.1 Research Preview` is a Qwen-first preview release for Apple Silic
 - recommended smoke target:
   - `/Users/alican/.lmstudio/models/mlx-community/Qwen3.5-9B-MLX-4bit`
 
+## Acceptance Snapshot
+
+- `python3 -m compileall src` passed
+- `PYTHONPATH=src .venv/bin/python -m pytest -q` -> `72 passed, 1 skipped`
+- `turbomlx generate ... --scorer-mode native_mlx` passed
+
+Benchmark snapshot (`512/64`, warmup `1`, repeats `3`):
+
+- `native_mlx`
+  - `prompt_tps`: `381.41`
+  - `generation_tps`: `40.10`
+  - `key_path_bytes`: `28776896`
+  - `native_working_set_bytes`: `18841600`
+- `oracle_preview`
+  - `prompt_tps`: `285.61`
+  - `generation_tps`: `41.58`
+  - `key_path_bytes`: `47618496`
+  - `native_working_set_bytes`: `0`
+
+Interpretation:
+
+- this is a tested snapshot, not a throughput guarantee
+- `native_mlx` reduced key-path memory and improved prompt throughput in the recorded run
+- `oracle_preview` remained slightly faster on median decode TPS in the same run
+
 ## Distribution
 
 - build the shareable artifact with `python3 scripts/export_preview_bundle.py`
