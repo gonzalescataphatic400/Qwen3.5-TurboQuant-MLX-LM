@@ -183,11 +183,6 @@ Experimental:
 - `mlx==0.31.1`
 - `mlx-lm==0.31.1`
 
-## Dates
-
-- arXiv v1: `28 Apr 2025`
-- OpenReview / ICLR 2026 Poster entry: `26 Jan 2026`
-
 This repository started from a blank directory plus the TurboQuant paper, so
 the current implementation emphasizes clean interfaces and verifiable reference
 math first. MLX runtime hardening is intentionally staged behind the preview
