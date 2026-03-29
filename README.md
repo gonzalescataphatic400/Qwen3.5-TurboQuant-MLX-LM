@@ -45,19 +45,40 @@ Verification results:
 - `python3 -m compileall src` passed
 - `PYTHONPATH=src .venv/bin/python -m pytest -q` -> `72 passed, 1 skipped`
 - Qwen native smoke generate passed with `scorer_route = native_mlx`
+- short native smoke snapshot:
+  - `prompt_tps`: `54.70`
+  - `generation_tps`: `42.59`
+  - `key_path_bytes`: `26504384`
+  - `total_kv_bytes`: `27110976`
+  - `native_working_set_bytes`: `1212416`
 
-Illustrative benchmark snapshot on the tested Apple Silicon stack:
+Benchmark snapshot on the tested Apple Silicon stack. All numbers below are medians with warmup `1` and repeats `3`.
 
-| Route | Prompt TPS | Decode TPS | Key Path Bytes | Native Working Set Bytes |
-| --- | ---: | ---: | ---: | ---: |
-| `native_mlx` median (`512/64`, warmup `1`, repeats `3`) | `381.41` | `40.10` | `28776896` | `18841600` |
-| `oracle_preview` median (`512/64`, warmup `1`, repeats `3`) | `285.61` | `41.58` | `47618496` | `0` |
+### 512 Prompt / 64 Generation
+
+| Route | Prompt TPS | Decode TPS | Key Path | Total KV | Native Working Set | Scorer Route |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| `baseline` | `1394.12` | `55.00` | `43.10 MiB` | `43.10 MiB` | `0.00 MiB` | `baseline` |
+| `mlx_quant` | `1366.74` | `47.83` | `30.18 MiB` | `30.18 MiB` | `0.00 MiB` | `mlx_quant` |
+| `turbomlx` + `oracle_preview` | `285.39` | `42.02` | `45.41 MiB` | `54.40 MiB` | `0.00 MiB` | `oracle_preview` |
+| `turbomlx` + `native_mlx` | `380.04` | `42.71` | `27.44 MiB` | `36.43 MiB` | `17.97 MiB` | `native_mlx` |
+
+### 2048 Prompt / 64 Generation
+
+| Route | Prompt TPS | Decode TPS | Key Path | Total KV | Native Working Set | Scorer Route |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| `baseline` | `1419.62` | `54.32` | `91.10 MiB` | `91.10 MiB` | `0.00 MiB` | `baseline` |
+| `mlx_quant` | `1365.77` | `52.10` | `43.68 MiB` | `43.68 MiB` | `0.00 MiB` | `mlx_quant` |
+| `turbomlx` + `oracle_preview` | `285.52` | `39.50` | `99.60 MiB` | `132.58 MiB` | `0.00 MiB` | `oracle_preview` |
+| `turbomlx` + `native_mlx` | `401.84` | `40.44` | `33.63 MiB` | `66.62 MiB` | `65.97 MiB` | `native_mlx` |
 
 Interpretation:
 
 - this snapshot is environment-specific and not a throughput guarantee
-- in this run, `native_mlx` improved prompt throughput and reduced key-path bytes materially
-- in this same run, `oracle_preview` was still slightly faster on median decode TPS
+- the strongest current TurboQuant signal is inside the same `turbomlx` backend: `scorer_route = native_mlx` produces nonzero `native_working_set_bytes`, lower key-path memory, and lower total KV bytes than `oracle_preview`
+- at `512/64`, `native_mlx` reduced key-path memory by `39.57%`, reduced total KV bytes by `33.03%`, improved prompt TPS by `33.16%`, and improved decode TPS by `1.65%` versus `oracle_preview`
+- at `2048/64`, `native_mlx` reduced key-path memory by `66.23%`, reduced total KV bytes by `49.76%`, improved prompt TPS by `40.74%`, and improved decode TPS by `2.38%` versus `oracle_preview`
+- this repo does not claim throughput parity with `baseline` or `mlx_quant`; the current research-preview claim is that TurboQuant is active and measurably changes the `turbomlx` runtime profile
 
 ## Bit Semantics
 

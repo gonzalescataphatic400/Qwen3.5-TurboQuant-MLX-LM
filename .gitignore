@@ -9,3 +9,4 @@ references/*.pdf
 dist/
 build/
 *.egg-info/
+benchmark_results/
